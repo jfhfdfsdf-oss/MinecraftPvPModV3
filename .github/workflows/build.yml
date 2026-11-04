@@ -1,5 +1,5 @@
 
-name: Build Minecraft Plugin
+name: Build Minecraft PvPMod
 
 on:
   push:
@@ -10,24 +10,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Repository herunterladen
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Java 21 installieren
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
+      # Gradle vorbereiten
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-- name: Build Plugin
-  working-directory: PvPMod-ohne-25-Prozent-Schadenslimit
-  run: chmod +x gradlew && ./gradlew clean test build
+      # Projektverzeichnis finden und kompilieren
+      - name: Build Plugin
+        shell: bash
+        run: |
+          if [ -f "gradlew" ]; then
+            PROJECT_DIR="."
+          elif [ -f "PvPMod-ohne-25-Prozent-Schadenslimit/gradlew" ]; then
+            PROJECT_DIR="PvPMod-ohne-25-Prozent-Schadenslimit"
+          else
+            echo "FEHLER: gradlew wurde nicht gefunden!"
+            echo "Dateien im Repository:"
+            find . -maxdepth 4 -type f | head -100
+            exit 1
+          fi
 
+          cd "$PROJECT_DIR"
+          chmod +x gradlew
+          ./gradlew clean test build
+
+      # Fertige JAR bereitstellen
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v4
         with:
           name: PvPMod
-          path: build/libs/*.jar
+          path: |
+            **/build/libs/*.jar
+          if-no-files-found: error
