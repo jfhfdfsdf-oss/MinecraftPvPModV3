@@ -1,0 +1,17 @@
+name: PvPMod
+version: '${version}'
+main: de.example.pvpmod.PvPMod
+api-version: '26.2'
+author: OpenAI
+description: Level-based PvP progression, custom items and unique mace rules.
+commands:
+  stats:
+    description: Opens your PvP statistics.
+    usage: /stats
+  pvpmod:
+    description: PvPMod administration.
+    usage: /pvpmod <reload|setlevel|addlevel|removelevel|stats|unban|reset|mace>
+permissions:
+  pvpmod.admin:
+    description: Allows all PvPMod administration commands.
+    default: op
